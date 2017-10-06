@@ -234,7 +234,7 @@ class RouteMapViewController: UIViewController {
         routePageViewController.updateManeuverViewForStep()
 
         mapView.addArrow(route: routeController.routeProgress.route, legIndex: routeController.routeProgress.legIndex, stepIndex: routeController.routeProgress.currentLegProgress.stepIndex + 1)
-        mapView.showRoute(routeController.routeProgress.route, legIndex: routeController.routeProgress.legIndex)
+        mapView.showRoute([routeController.routeProgress.route], legIndex: routeController.routeProgress.legIndex)
 
         if isInOverviewMode {
             updateVisibleBounds()
@@ -270,7 +270,7 @@ class RouteMapViewController: UIViewController {
         
         if currentLegIndexMapped != routeProgress.legIndex {
             mapView.showWaypoints(routeProgress.route, legIndex: routeProgress.legIndex)
-            mapView.showRoute(routeProgress.route, legIndex: routeProgress.legIndex)
+            mapView.showRoute([routeProgress.route], legIndex: routeProgress.legIndex)
             
             currentLegIndexMapped = routeProgress.legIndex
         }
@@ -546,7 +546,7 @@ extension RouteMapViewController: MGLMapViewDelegate {
         guard isViewLoaded && view.window != nil else { return }
         let map = mapView as NavigationMapView
         guard !map.showsRoute else { return }
-        map.showRoute(routeController.routeProgress.route, legIndex: routeController.routeProgress.legIndex)
+        map.showRoute([routeController.routeProgress.route], legIndex: routeController.routeProgress.legIndex)
         map.showWaypoints(routeController.routeProgress.route, legIndex: routeController.routeProgress.legIndex)
     }
 }
