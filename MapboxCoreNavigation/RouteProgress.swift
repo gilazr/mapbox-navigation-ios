@@ -103,46 +103,44 @@ open class RouteProgress: NSObject {
         self.legIndex = legIndex
         super.init()
         currentLegProgress = RouteLegProgress(leg: currentLeg, stepIndex: 0)
-        
-        
-        
+
+
+
         for (legIndex, leg) in route.legs.enumerated() {
             var maneuverCoordinateIndex = 0
-            
+
             congestionTimesPerStep.append([])
-            
+
             /// An index into the route’s coordinates and congestionTravelTimesSegmentsByStep that corresponds to a step’s maneuver location.
             var congestionTravelTimesSegmentsByLeg: [[TimedCongestionLevel]] = []
-            
+
             if let segmentCongestionLevels = leg.segmentCongestionLevels, let expectedSegmentTravelTimes = leg.expectedSegmentTravelTimes  {
-                
+
                 for step in leg.steps {
                     guard let coordinates = step.coordinates else { continue }
                     let stepCoordinateCount = step.maneuverType == .arrive ? Int(step.coordinateCount) : coordinates.dropLast().count
                     let nextManeuverCoordinateIndex = maneuverCoordinateIndex + stepCoordinateCount - 1
-                    
+
                     guard nextManeuverCoordinateIndex < segmentCongestionLevels.count else { continue }
                     guard nextManeuverCoordinateIndex < expectedSegmentTravelTimes.count else { continue }
-                    
+
                     let stepSegmentCongestionLevels = Array(segmentCongestionLevels[maneuverCoordinateIndex..<nextManeuverCoordinateIndex])
                     let stepSegmentTravelTimes = Array(expectedSegmentTravelTimes[maneuverCoordinateIndex..<nextManeuverCoordinateIndex])
                     maneuverCoordinateIndex = nextManeuverCoordinateIndex
-                    
+
                     let stepTimedCongestionLevels = Array(zip(stepSegmentCongestionLevels, stepSegmentTravelTimes))
                     congestionTravelTimesSegmentsByLeg.append(stepTimedCongestionLevels)
                     var stepCongestionValues: [CongestionLevel: TimeInterval] = [:]
                     for (segmentCongestion, segmentTime) in stepTimedCongestionLevels {
                         stepCongestionValues[segmentCongestion] = (stepCongestionValues[segmentCongestion] ?? 0) + segmentTime
                     }
-                    
+
                     congestionTimesPerStep[legIndex].append(stepCongestionValues)
                 }
             }
-            
+
             congestionTravelTimesSegmentsByStep.append(congestionTravelTimesSegmentsByLeg)
         }
-        
-        createAudioForRoute(route: route)
     }
 }
 
